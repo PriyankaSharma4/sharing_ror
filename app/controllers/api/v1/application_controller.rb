@@ -46,33 +46,6 @@ class Api::V1::ApplicationController < ActionController::API
 	end
 
 
-	def authenticate_api_user_old
-		begin
-			if current_user.present?
-				@current_api_user = current_user
-			else
-				raise "Please add apisecret in headers" if request.headers["HTTP_APISECRET"].blank?
-				puts request.headers["HTTP_APISECRET"]
-				@current_api_user=User.find_by_api_secret(request.headers["HTTP_APISECRET"])
-				raise "user_not_found" if @current_api_user.nil?
-
-			end
-		rescue Exception => @e
-				err_hash={}
-				err_hash[:error]=@e.message
-				render :json => err_hash.to_json, status: :unauthorized
-		end
-	end
-
-	def authenticate_doctor
-		begin
-			raise "Sorry! You are not authorized." unless @current_api_user.role == 1
-		rescue Exception => @e
-			err_hash={}
-			err_hash[:error]=@e.message
-			render :json => err_hash.to_json, status: :unauthorized
-		end
-	end
 
 	def set_api_format
 		request.format = :json
